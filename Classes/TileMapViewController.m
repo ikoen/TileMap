@@ -76,7 +76,7 @@
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id <MKOverlay>)overlay
 {
     TileOverlayView *view = [[TileOverlayView alloc] initWithOverlay:overlay];
-    view.tileAlpha = 0.6;
+    view.tileAlpha = 1;
     return [view autorelease];
 }
 
