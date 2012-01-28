@@ -48,36 +48,118 @@
 #import "TileMapViewController.h"
 #import "TileOverlay.h"
 #import "TileOverlayView.h"
+#import "WildcardGestureRecognizer.h"
 
 @implementation TileMapViewController
 
 - (void)viewDidLoad
 {
+    // an instance of WildcardGestureRecognizer is for recognizing touches in the MKMapKit  
+    tapInterceptor = [[WildcardGestureRecognizer alloc] init];
+    tapInterceptor.touchesBeganCallback =^(NSSet * touches, UIEvent * event) {
+        NSLog(@"TOUCH BEGAN IN VIEWCONTROLLER\n");
+        [map removeOverlays:map.overlays];
+        if (currentview == 432) {
+            [map addOverlay:overlay_321];
+            currentview = 321;
+        }
+        else {
+            [map addOverlay:overlay_432];
+            currentview = 432;
+        }
+    };
+    [map addGestureRecognizer:tapInterceptor];
+    
     // Initialize the TileOverlay with tiles in the application's bundle's resource directory.
     // Any valid tiled image directory structure in there will do.
     NSString *tileDirectory = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Tiles"];
-    TileOverlay *overlay = [[TileOverlay alloc] initWithTileDirectory:tileDirectory];
-    [map addOverlay:overlay];
+    overlay_321 = [[TileOverlay alloc] initWithTileDirectory:tileDirectory];
+    
+    //arlduc: add a second band combination
+    NSString *tileDirectory2 = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Tiles_432"];
+    overlay_432 = [[TileOverlay alloc] initWithTileDirectory:tileDirectory2];
+    [map addOverlay:overlay_432];
+    currentview = 432;
+    NSLog(@"ADDED 432\n");
+
+    
     
     // zoom in by a factor of two from the rect that contains the bounds
     // because MapKit always backs up to get to an integral zoom level so
     // we need to go in one so that we don't end up backed out beyond the
     // range of the TileOverlay.
-    MKMapRect visibleRect = [map mapRectThatFits:overlay.boundingMapRect];
+    MKMapRect visibleRect = [map mapRectThatFits:overlay_321.boundingMapRect];
     visibleRect.size.width /= 2;
     visibleRect.size.height /= 2;
     visibleRect.origin.x += visibleRect.size.width / 2;
     visibleRect.origin.y += visibleRect.size.height / 2;
     map.visibleMapRect = visibleRect;
-    
-    [overlay release]; // map is now keeping track of overlay
 }
+
+
+
+
 
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id <MKOverlay>)overlay
 {
     TileOverlayView *view = [[TileOverlayView alloc] initWithOverlay:overlay];
     view.tileAlpha = 1;
+    
     return [view autorelease];
 }
+
+
+
+#pragma mark === Touch handling  ===
+#pragma mark
+
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    //[tapInterceptor touchesBeganCallback];
+    
+    NSLog(@"TOUCH BEGAN IN VIEWCONTROLLER\n");
+    [map removeOverlays:map.overlays];
+    if (currentview == 432) {
+        [map addOverlay:overlay_321];
+        currentview = 321;
+    }
+    else {
+        [map addOverlay:overlay_432];
+        currentview = 432;
+    }
+    
+    
+}
+
+
+// Handles the start of a touch
+/*-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    NSLog(@"TOUCH BEGAN\n");
+    [map removeOverlays:map.overlays];
+    if (currentview == 432) {
+        [map addOverlay:overlay_321];
+        currentview = 321;
+    }
+    else {
+        [map addOverlay:overlay_432];
+        currentview = 432;
+    }
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    NSLog(@"TOUCH ENDED\n");
+}
+*/
+ 
+- (void)dealloc
+{
+    [overlay_321 release]; 
+    [overlay_432 release]; 
+    [tapInterceptor release];
+}
+
 
 @end

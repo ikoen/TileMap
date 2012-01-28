@@ -48,9 +48,13 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
-
+#import "TileOverlay.h"
+#import "WildcardGestureRecognizer.h"
 @interface TileMapViewController : UIViewController <MKMapViewDelegate> {
     IBOutlet MKMapView *map;
+    WildcardGestureRecognizer * tapInterceptor;
+    TileOverlay *overlay_321, *overlay_432;
+    int currentview;
 }
 
 @end
