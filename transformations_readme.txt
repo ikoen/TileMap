@@ -44,5 +44,15 @@ gdal_translate -of GTiff -co "TILED=YES" p012r031_7t20000927_z19_nn40.tif tiledp
 gdalbuildvrt -hidenodata -vrtnodata "0,0,0" test_index2.vrt tiledp013r032.tif tiledp013r031.tif tiledp012r031.tif
 
 python /Library/Frameworks/GDAL.framework/Versions/1.8/Programs/gdal2tiles.py test_index2.vrt Tiles2
+
+
+
+
+//copy geographic information from geotiff to tif. 
+// export geotiff information to text file. 
+listgeo p012r031_7t20000927_z19_nn10.tif > p012r031_7t20000927_z19_nn10.txt 
+//import text file with geographic information to landsat composites. 
+geotifcp -g p012r031_7t20000927_z19_nn10.txt  p013r032_7t20001020_z18_321.tif p013r032_7t20001020_z18_321_geo.tif
+
  
  
